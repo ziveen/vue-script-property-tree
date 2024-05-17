@@ -1,6 +1,6 @@
-import { parse as _parse } from "@babel/parser";
 import * as t from "@babel/types";
 import * as vscode from 'vscode';
+import { parse as vueParse, compileScript } from '@vue/compiler-sfc';
 
 const vueHookNames = [
   "computed",
@@ -16,21 +16,30 @@ const vueHookNames = [
   "beforeDestroy",
 ];
 
+function getLineNumber(input: string,searchString): number {
+  const lines = input.split('\n');
+  for(let i = 0;i<lines.length;i++) {
+    if(lines[i].includes(searchString)) {
+      return i;
+    }
+  }
+  return 0;
+}
+
 export function parse(source: string, filePath: string) {
   if (!source) {
     return [];
   }
   
-  const scriptReg = /<\/?script>/g;
+  const ast = vueParse({ source,filename: filePath });
+  const _script = compileScript(ast);
 
-  const [start, end] = [...source.matchAll(scriptReg)].map((d) => d.index);
-  const scriptStr = source.slice(start + 8, end);
+  const astBody = _script.scriptAst;
+  if(!astBody) {
+    return [];
+  }
 
-  const ast = _parse(scriptStr, {
-    sourceType: "module",
-    plugins: ["jsx"],
-  });
-  const astBody = ast.program.body;
+  const scriptStartLine = getLineNumber(source, '<script');
 
   const declarationConfig = astBody.find(
     (a) => a.type === "ExportDefaultDeclaration"
@@ -52,7 +61,7 @@ export function parse(source: string, filePath: string) {
 			name, 
 			isLeaf ? vscode.TreeItemCollapsibleState.None:  vscode.TreeItemCollapsibleState.Collapsed, 
 			filePath,
-			new vscode.Position(loc.start.line, loc.start.column),
+			new vscode.Position(loc.start.line + scriptStartLine - 1, loc.start.column),
 			children
 		);
 	}
