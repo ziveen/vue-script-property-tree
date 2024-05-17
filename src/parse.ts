@@ -1,6 +1,6 @@
 import * as t from "@babel/types";
 import * as vscode from 'vscode';
-import { parse as vueParse, compileScript } from '@vue/compiler-sfc';
+import {parse as _parse} from '@babel/parser';
 
 const vueHookNames = [
   "computed",
@@ -16,10 +16,11 @@ const vueHookNames = [
   "beforeDestroy",
 ];
 
-function getLineNumber(input: string,searchString): number {
+/**search the line number in the vue file */
+function getLineNumber(input: string, searchString: string): number {
   const lines = input.split('\n');
   for(let i = 0;i<lines.length;i++) {
-    if(lines[i].includes(searchString)) {
+    if(lines[i]?.includes(searchString)) {
       return i;
     }
   }
@@ -30,11 +31,22 @@ export function parse(source: string, filePath: string) {
   if (!source) {
     return [];
   }
-  
-  const ast = vueParse({ source,filename: filePath });
-  const _script = compileScript(ast);
 
-  const astBody = _script.scriptAst;
+  const reg = /<script>([\s\S]*?)<\/script>/;
+  const scriptStr = source.match(reg)?.[1];
+  console.log('scriptStr :>> ', scriptStr);
+  if(!scriptStr) {
+    console.log('no config in this file');
+    return [];
+  }
+  
+  const ast =_parse(scriptStr, {
+    sourceType: 'module',
+    plugins: ['jsx']
+  });
+  console.log('ast :>> ', ast);
+
+  const astBody = ast.program.body;
   if(!astBody) {
     return [];
   }

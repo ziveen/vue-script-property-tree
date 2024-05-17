@@ -13,7 +13,10 @@
     "onLanguage:vue",
     "onCommand:jumpToProperty"
   ],
-  "main": "./out/extension.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
   "contributes": {
     "commands": [
       {
@@ -40,20 +43,22 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "dev": "tsup --watch",
+    "build": "tsup",
     "lint": "eslint src --ext ts",
-    "test": "vitest"
+    "test": "vitest",
+    "typecheck": "tsc",
+    "vscode:prepublish": "pnpm build"
   },
   "devDependencies": {
+    "@babel/parser": "^7.24.5",
     "@babel/types": "^7.24.5",
     "@types/node": "18.x",
     "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
-    "@vue/compiler-sfc": "2.7.16",
     "eslint": "^8.57.0",
+    "tsup": "^8.0.2",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   }
