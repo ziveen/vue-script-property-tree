@@ -7,7 +7,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	vscode.workspace.onDidOpenTextDocument(document => {
 		if(document.languageId === 'vue') {
-			vscode.window.showInformationMessage('open editor');
+			dataProvider.parseVueFile(document.fileName);
+		}
+	});
+
+	vscode.workspace.onDidSaveTextDocument(document => {
+		if(document.languageId === 'vue') {
 			dataProvider.parseVueFile(document.fileName);
 		}
 	});
