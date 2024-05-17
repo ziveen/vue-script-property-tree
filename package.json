@@ -28,7 +28,7 @@
       "activitybar": [
         {
           "id": "vuePropertiesViewer",
-          "title": "vue fn map",
+          "title": "vue property tree",
           "icon": "media/icon.svg"
         }
       ]
@@ -48,7 +48,8 @@
     "lint": "eslint src --ext ts",
     "test": "vitest",
     "typecheck": "tsc",
-    "vscode:prepublish": "pnpm build"
+    "vscode:prepublish": "pnpm build",
+    "publish": "vsce publish --no-dependencies"
   },
   "devDependencies": {
     "@babel/parser": "^7.24.5",
@@ -57,6 +58,7 @@
     "@types/vscode": "^1.89.0",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
+    "@vscode/vsce": "^2.26.1",
     "eslint": "^8.57.0",
     "tsup": "^8.0.2",
     "typescript": "^5.4.5",
